@@ -23,52 +23,52 @@ Medicare.gov released recent two years's data about "Drug and Health Plan" cover
 |[PlanInfoCountyFipsCode.csv, vwStarRatingSummaryScores.csv](https://www.medicare.gov/download/downloaddb.asp) | 3,065,622 |"contract_id", "plan_id", "contract_year", "org_name", "plan_name", "city", "state_code", "zip_code", "CountyFIPSCode", "Summary_Score"|
 |[Health Insurance statistics](http://www.census.gov/data/developers/data-sets/Health-Insurance-Statistics.html) | 3,143 |"NAME", "NIC_PT"(Number Insured), "NUI_PT(Number Uninsured)", "PCTIC_PT"(Percent Insured), "PCTUI_PT"(Percent Uninsured), "state", "county", "CountyFPISCode"|
 |[Unemployment Rate](http://zipatlas.com/us/zip-code-comparison/unemployment-rate.htm) | 31,706 | "Zip Code", "Unemployment Rate" |
-|[Hospital General Information](https://data.medicare.gov/data/hospital-compare) | 4,806 | "zipcode", "Hospital Ownership"(Government, non-profit, Proprietary, ) |
 |[Income by zipcode](https://www.irs.gov/uac/SOI-Tax-Stats-Individual-Income-Tax-Statistics-2013-ZIP-Code-Data-(SOI)) |27,791 | "zip code", "AGI_STUB"(size of adjusted gross income)|
+|[Hospital General Information](https://data.medicare.gov/data/hospital-compare) | 4,806 | "zipcode", "Hospital Ownership"(Government, non-profit, Proprietary, ) |
 
-# Data Preprocessing of Drug and Health Plan, Insurance, Income Level, and Hospital Type
-Prepare Durg and Health Plan By County and State
-```{r,cache=TRUE}
-# load PlanInfoCounty_FipsCodeLessThan30000
-data1 <- read.csv("./data/2016Med2000_PlanInfoCounty1_flatfiles/PlanInfoCounty_FipsCodeLessThan30000.csv", stringsAsFactors = FALSE)
-colnames <- c("contract_id", "plan_id", "contract_year", "org_name", "plan_name", "city", "state_code", "zip_code", "CountyFIPSCode")
-data12 <- data1[,colnames]
-# load PlanInfoCounty_FipsCodeMoreThan30000
-data2 <- read.csv("./data/2016Med2000_PlanInfoCounty2_flatfiles/PlanInfoCounty_FipsCodeMoreThan30000.csv", stringsAsFactors = FALSE)
-data22 <- data2[,colnames]
-# join 2 parts of less than 30000 and more than 30000
-data <- rbind(data12, data22)
-# write up plan info by county_FIPSCode
-#write.csv(data, file = "./PlanInfoCounty_FipsCode.csv")
-#head(data)
-```
-Prepare Durg and Health Plan Ratings
-```{r,cache=TRUE}
-options(width=80)
-# load rating data
-ratingdata <- read.csv("./data/2016StarRatings_flatfiles/vwStarRating_SummaryScores.csv",na.strings = c("Plan too new to be measured", "Not enough data available"), stringsAsFactors = FALSE)
-# remove Spanish Version
-ratingdata2 <- ratingdata[ratingdata$lang_dscrptn=="English",]
-# split the string to get the rating number
-ratingdata2$Star_Rating_Current <- sapply(strsplit(ratingdata2$Star_Rating_Current, split=" "), '[', 1)
-ratingdata2$Star_Rating_Previous <- sapply(strsplit(ratingdata2$Star_Rating_Previous, split=" "), '[', 1)
-# subset the rating data
-ratingdata3 <- ratingdata2[ratingdata2$Summary_Score=="Overall Plan Rating", 1:3]
-#head(ratingdata3)
+Data Preprocessing of Drug and Health Plan, Insurance, Income Level, and Hospital Type
+<!-- Prepare Durg and Health Plan By County and State -->
+<!-- ```{r,cache=TRUE, include=FALSE} -->
+<!-- # load PlanInfoCounty_FipsCodeLessThan30000 -->
+<!-- data1 <- read.csv("./data/2016Med2000_PlanInfoCounty1_flatfiles/PlanInfoCounty_FipsCodeLessThan30000.csv", stringsAsFactors = FALSE) -->
+<!-- colnames <- c("contract_id", "plan_id", "contract_year", "org_name", "plan_name", "city", "state_code", "zip_code", "CountyFIPSCode") -->
+<!-- data12 <- data1[,colnames] -->
+<!-- # load PlanInfoCounty_FipsCodeMoreThan30000 -->
+<!-- data2 <- read.csv("./data/2016Med2000_PlanInfoCounty2_flatfiles/PlanInfoCounty_FipsCodeMoreThan30000.csv", stringsAsFactors = FALSE) -->
+<!-- data22 <- data2[,colnames] -->
+<!-- # join 2 parts of less than 30000 and more than 30000 -->
+<!-- data <- rbind(data12, data22) -->
+<!-- # write up plan info by county_FIPSCode -->
+<!-- #write.csv(data, file = "./PlanInfoCounty_FipsCode.csv") -->
+<!-- #head(data) -->
+<!-- ``` -->
+<!-- Prepare Durg and Health Plan Ratings -->
+<!-- ```{r,include=FALSE} -->
+<!-- options(width=80) -->
+<!-- # load rating data -->
+<!-- ratingdata <- read.csv("./data/2016StarRatings_flatfiles/vwStarRating_SummaryScores.csv",na.strings = c("Plan too new to be measured", "Not enough data available"), stringsAsFactors = FALSE) -->
+<!-- # remove Spanish Version -->
+<!-- ratingdata2 <- ratingdata[ratingdata$lang_dscrptn=="English",] -->
+<!-- # split the string to get the rating number -->
+<!-- ratingdata2$Star_Rating_Current <- sapply(strsplit(ratingdata2$Star_Rating_Current, split=" "), '[', 1) -->
+<!-- ratingdata2$Star_Rating_Previous <- sapply(strsplit(ratingdata2$Star_Rating_Previous, split=" "), '[', 1) -->
+<!-- # subset the rating data -->
+<!-- ratingdata3 <- ratingdata2[ratingdata2$Summary_Score=="Overall Plan Rating", 1:3] -->
+<!-- #head(ratingdata3) -->
 
-#join plan and ratings by Contract ID
-# med_data <- merge(x=data, y=ratingdata3, by.x = "contract_id", by.y = "Contract_ID", all.x = TRUE)
-# sum(is.na(med_data[med_data$Summary_Score]))
-# nrow(med_data)
-#tail(med_data, 10)
-```
-Prepare Insurance Coverage Data
+<!-- #join plan and ratings by Contract ID -->
+<!-- # med_data <- merge(x=data, y=ratingdata3, by.x = "contract_id", by.y = "Contract_ID", all.x = TRUE) -->
+<!-- # sum(is.na(med_data[med_data$Summary_Score])) -->
+<!-- # nrow(med_data) -->
+<!-- #tail(med_data, 10) -->
+<!-- ``` -->
+#Insurance Coverage by CountyFPISCode
 ```{r,cache=TRUE}
 #Use census.gov developer API to get the insurance related data
 #http://api.census.gov/data/timeseries/healthins/sahie?get=NAME,NIC_PT,NUI_PT,PCTIC_PT,PCTUI_PT&for=COUNTY:*&time=2013
 #install.packages("rjson")
 library(rjson)
-json_file <- "./sahie.json"
+json_file <- "./data/sahie.json"
 json_data <- data.frame(fromJSON(file = json_file))
 insurance_data <- t(json_data)
 rownames(insurance_data) <- NULL
@@ -79,23 +79,40 @@ insurance_data <- data.frame(insurance_data[-1,], stringsAsFactors = FALSE)
 insurance_data$CountyFPISCode <- as.numeric(with(insurance_data, paste(state, county, sep = "")))
 #write.csv(json_data1, file = "./insurance_coverage_2013.csv")
 insurance_data2 <- insurance_data[, c("NAME", "NIC_PT", "PCTIC_PT", "CountyFPISCode")]
-#head(insurance_data2)
+str(insurance_data2)
+head(insurance_data2)
 ```
-Prepare Income Level by Zip Code
-```{r,cache=TRUE}
-# loading income level, we only need State, zipcode, agi_stub(levels: 1,2,3,4,5,6)
-# 1 = $1 under $25,000, 2 = $25,000 under $50,000, 3 = $50,000 under $75,000
-# 4 = $75,000 under $100,000, 5 = $100,000 under $200,000, 6 = $200,000 or more
-income_data <- read.csv("./data/incomelevel_zipcode2013/13zpallagi.csv", stringsAsFactors = FALSE)
-income_data2 <- income_data[, c("STATE", "zipcode", "agi_stub")]
-#head(income_data2)
-```
-Prepare Hospital Type by Zip Code
+#Hospital Type by Zipcode, County Name, or State
 ```{r,cache=TRUE}
 # loading hospital data, we only need 
 hospital_data <- read.csv("./data/Hospital_Revised_Flatfiles/Hospital General Information.csv", stringsAsFactors = FALSE)
 hospital_data2 <- hospital_data[, c("Hospital.Name", "State", "ZIP.Code", "County.Name", "Hospital.Type")]
-#head(hospital_data2)
+str(hospital_data2)
+head(hospital_data2)
 ```
-# Combine data
-All the data sets would be combined by the same field of zip code.
+# Unemployment Rate by Zipcode
+```{r,cache=TRUE}
+unemployment_data <- read.table("./data/unemployment.txt", stringsAsFactors = FALSE)
+unemployment_data2 <- unemployment_data[, c(2, 6, 7)]
+colnames(unemployment_data2) <- c("zipcode", "polulation", "unemployment_rate")
+unemployment_data2$polulation <- as.numeric(gsub("[[:punct:]]", "", unemployment_data2$polulation))
+unemployment_data2$unemployment_rate <- as.numeric(unemployment_data2$unemployment_rate) / 100
+str(unemployment_data2)
+head(unemployment_data2)
+```
+<!-- Prepare Income Level by Zip Code -->
+<!-- ```{r,include=FALSE} -->
+<!-- # loading income level, we only need State, zipcode, agi_stub(levels: 1,2,3,4,5,6) -->
+<!-- # 1 = $1 under $25,000, 2 = $25,000 under $50,000, 3 = $50,000 under $75,000 -->
+<!-- # 4 = $75,000 under $100,000, 5 = $100,000 under $200,000, 6 = $200,000 or more -->
+<!-- income_data <- read.csv("./data/incomelevel_zipcode2013/13zpallagi.csv", stringsAsFactors = FALSE) -->
+<!-- income_data2 <- income_data[, c("STATE", "zipcode", "agi_stub")] -->
+<!-- str(income_data2) -->
+<!-- head(income_data2) -->
+<!-- ``` -->
+# Combine data by zip code or county
+```{r,cache=TRUE}
+mdata <- merge(hospital_data2, unemployment_data2, all = TRUE, by.x = "ZIP.Code", by.y = "zipcode")
+mdata2 <- na.omit(mdata)
+head(mdata2)
+```
