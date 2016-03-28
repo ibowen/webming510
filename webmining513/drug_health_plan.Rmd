@@ -17,18 +17,13 @@ Medicare.gov released recent two years's data about "Drug and Health Plan" cover
 |K-means, SOM| Before getting into the prediction modeling, we need first explore the structure of the datasets. K-means is one easy and light algorithms to finish this job. For further exploring, we might use SOM to do the same thing.|
 |Multivariant Regession, Naive Bayes, Decision Tree, ANN|Since the project is one supervised problem, we are going to apply multiple prediction models to the datasets. And we will choose the final one with the highest accuracy.|
 
-# Data Description: origin, data points, and vairables
-|            Data Sets          |   Data Point | Variables                     |
-|-------------------------------|--------------|-------------------------------|
-|[PlanInfoCountyFipsCode.csv, vwStarRatingSummaryScores.csv](https://www.medicare.gov/download/downloaddb.asp) | 3,065,622 |"contract_id", "plan_id", "contract_year", "org_name", "plan_name", "city", "state_code", "zip_code", "CountyFIPSCode", "Summary_Score"|
-|[Health Insurance statistics](http://www.census.gov/data/developers/data-sets/Health-Insurance-Statistics.html) | 3,143 |"NAME", "NIC_PT"(Number Insured), "NUI_PT(Number Uninsured)", "PCTIC_PT"(Percent Insured), "PCTUI_PT"(Percent Uninsured), "state", "county", "CountyFPISCode"|
-|[Unemployment Rate](http://zipatlas.com/us/zip-code-comparison/unemployment-rate.htm) | 31,706 | "Zip Code", "Unemployment Rate" |
-|[Income by zipcode](https://www.irs.gov/uac/SOI-Tax-Stats-Individual-Income-Tax-Statistics-2013-ZIP-Code-Data-(SOI)) |27,791 | "zip code", "AGI_STUB"(size of adjusted gross income)|
-|[Hospital General Information](https://data.medicare.gov/data/hospital-compare) | 4,806 | "zipcode", "Hospital Ownership"(Government, non-profit, Proprietary, ) |
 
-# Durg and Health Plan with copay, deductible, coinsurance
-```{r,cache=TRUE,warning=FALSE}
-# load vwPlanDrugsCostSharing.csv
+# Drug and Health Plan with copay, deductible, coinsurance
+- Origin: www.medicare.gov
+- Data Points after preprocessing: 816 obs. of  5 variables
+- variables:
+
+```{r,cache=TRUE,warning=FALSE,echo=FALSE}
 drug_cost <- read.csv("./data/2015Med2000_flatfiles/vwPlanDrugsCostSharing.csv", stringsAsFactors = FALSE, na.strings = c("Information Not Available", ""))
 # keep the copay, deductible, and coinsurance
 colnames <- c("contract_id", "plan_id", "mnthly_prm", "ann_ddctbl", "copay_amt_inn_prefrd", "coins_amt_inn_prefrd")
@@ -67,10 +62,14 @@ drug_cost4_aggr <- drug_cost4_aggr[, c("Group.1", "mnthly_prm", "ann_ddctbl", "c
 colnames(drug_cost4_aggr) <- c("contract_id", "mnthly_prm", "ann_ddctbl", "copay_max", "coin_max")
 #write.csv(drug_cost4_aggr[, c("Group.1", "copay_max", "coin_max")], file = "./drug_cost.csv")
 str(drug_cost4_aggr)
-head(drug_cost4_aggr)
+tail(drug_cost4_aggr)
 ```
-# Drug and Health Cost Tier Levle
-```{r,cache=TRUE,warning=FALSE}
+# Drug and Health Cost Tier Level
+- Origin: www.medicare.gov
+- Data Points after preprocessing: 585 obs. of  2 variables
+- variables:
+
+```{r,cache=TRUE,warning=FALSE,echo=FALSE}
 # load vwPlanDrugTierCost.csv 
 cost_tier <- read.csv("./data/2015Med2000_flatfiles/vwPlanDrugTierCost.csv", stringsAsFactors = FALSE)
 # keep contract_id, plan_id, languange_id, tier_lable
@@ -82,11 +81,15 @@ cost_tier3 <- cost_tier2[, c("contract_id", "tier_label")]
 cost_tier4 <- aggregate(data = cost_tier3,  tier_label ~ contract_id, function(x) length(unique(x)))
 #cost_tier5 <- aggregate(cost_tier4, by = list(cost_tier4$contract_id), FUN = sum)
 str(cost_tier4)
-head(cost_tier4)
+tail(cost_tier4)
 ```
-# Durg and Health Plan Ratings
-```{r,cache=TRUE}
-options(width=80)
+# Durg and Health Plan Score Ratings
+- Origin: www.medicare.gov
+- Data Points after preprocessing: 1214 obs. of  3 variables
+- variables:
+
+```{r,cache=TRUE,echo=FALSE}
+#options(width=80)
 # load rating data
 ratingdata <- read.csv("./data/2015StarRatings_flatfiles/vwStarRating_SummaryScores.csv",na.strings = c("Plan too new to be measured", "Not enough data available"), stringsAsFactors = FALSE)
 # remove Spanish Version
@@ -100,24 +103,28 @@ ratingdata2$Star_Rating_Current <- sapply(strsplit(ratingdata2$Star_Rating_Curre
 # remove NAs of the current 2015 year
 ratingdata2_nocurrna <- ratingdata2[(!is.na(ratingdata2$Star_Rating_Current)), ]
 str(ratingdata2_nocurrna)
-head(ratingdata2_nocurrna)
+tail(ratingdata2_nocurrna)
+#write.csv(ratingdata2, file = "ratingdata.csv")
 # subset the rating data
 # ratingdata3 <- ratingdata2[ratingdata2$Summary_Score=="Overall Plan Rating", 1:3]
 #head(ratingdata3)
-
-#join plan and ratings by Contract ID
-# med_data <- merge(x=data, y=ratingdata3, by.x = "contract_id", by.y = "Contract_ID", all.x = TRUE)
-# sum(is.na(med_data[med_data$Summary_Score]))
-# nrow(med_data)
-#tail(med_data, 10)
 ```
 # Geographic data
-```{r,cache=TRUE}
+- Origin: www.medicare.gov
+- Data Points after preprocessing: 419,003 obs. of  2 variables
+- variables:
+
+```{r,cache=TRUE,echo=FALSE}
 zip_contract <- read.csv("./data/2015Med2000_flatfiles/vwLocalContractServiceAreas.csv", stringsAsFactors = FALSE)
 zip_contract2 <- zip_contract[, c("Zip_Code", "Contract_ID")]
+str(zip_contract2)
+tail(zip_contract2)
 ```
-# Internal: combine by contract id
-```{r,cache=TRUE}
+# Internal Features Combination: by contract id
+- Data Points after preprocessing: 852,213 obs. of  9 variables
+- variables:
+
+```{r,cache=TRUE,echo=FALSE}
 cost <- merge(cost_tier4, drug_cost4_aggr, all = TRUE, by = "contract_id")
 cost_rating <- merge(cost, ratingdata2_nocurrna, all = TRUE, by.x = "contract_id", by.y = "Contract_ID")
 cost_rating$tier_label[is.na(cost_rating$tier_label)] <- 0
@@ -125,63 +132,83 @@ cost_rating2 <- na.omit(cost_rating)
 cost_rating_zip <- merge(cost_rating2, zip_contract2, all = TRUE, by.x = "contract_id", by.y = "Contract_ID")
 cost_rating_zip2 <- na.omit(cost_rating_zip)
 str(cost_rating_zip2)
+tail(cost_rating_zip2)
 #ratingdata2_nocurrna
 #cost_tier4
 #zip_contract2
 #drug_cost4_aggr
 ```
-# Unemployment Rate by Zipcode
-```{r,cache=TRUE}
+# Unemployment Rate
+- Origin: http://zipatlas.com
+- Data Points after preprocessing: 29,252 obs. of  3 variables
+- variables:
+
+```{r,cache=TRUE,echo=FALSE}
 unemployment_data <- read.table("./data/unemployment.txt", stringsAsFactors = FALSE)
 unemployment_data2 <- unemployment_data[, c(2, 6, 7)]
 colnames(unemployment_data2) <- c("zipcode", "polulation", "unemployment_rate")
 unemployment_data2$polulation <- as.numeric(gsub("[[:punct:]]", "", unemployment_data2$polulation))
 unemployment_data2$unemployment_rate <- as.numeric(unemployment_data2$unemployment_rate)
-
 str(unemployment_data2)
-head(unemployment_data2)
+tail(unemployment_data2)
 ```
-# Total Income by Zip Code
-```{r,cache=TRUE}
-# loading income level, we only need State, zipcode, agi_stub(levels: 1,2,3,4,5,6)
-# 1 = $1 under $25,000, 2 = $25,000 under $50,000, 3 = $50,000 under $75,000
-# 4 = $75,000 under $100,000, 5 = $100,000 under $200,000, 6 = $200,000 or more
+# Total Income
+- Origin: https://www.irs.gov
+- Data Points after preprocessing: 27,790 obs. of  3 variables
+- variables:
+
+```{r,cache=TRUE,echo=FALSE}
 income_data <- read.csv("./data/incomelevel_zipcode2013/zipcodenoagi13.csv", stringsAsFactors = FALSE)
 income_data2 <- income_data[, c("STATE", "ZIPCODE", "A02650")]
 colnames(income_data2)[3] <- "total_income"
 str(income_data2)
-head(income_data2)
+tail(income_data2)
 ```
-# External: combine data by zip code or county
-```{r,cache=TRUE}
+# External Features Combination: by zip code
+- Data Points after preprocessing: 25,376 obs. of  6 variables
+- variables:
+
+```{r,cache=TRUE,echo=FALSE}
 unemploy_Income <- merge(unemployment_data2, income_data2, all = TRUE, by.x = "zipcode", by.y = "ZIPCODE")
 unemploy_Income_0na <- na.omit(unemploy_Income)
 unemploy_Income_0na$averge_income <- unemploy_Income_0na$total_income / unemploy_Income_0na$polulation
 #unemploy_Income_0na <- unemploy_Income[!is.na(unemploy_Income$unemployment_rate), ]
-#str(unemploy_Income_0na)
-#head(unemploy_Income_0na)
+str(unemploy_Income_0na)
+head(unemploy_Income_0na)
 #write.csv(unemploy_Income_0na, file = "./external_data.csv")
 ```
-# Combine all data
-```{r,cache=TRUE}
+# Combine Internal and External Data
+- Data Points after preprocessing: 533,617 obs. of  14 variables
+- variables:
+```{r,cache=TRUE,echo=FALSE}
 final_data <- merge(unemploy_Income_0na, cost_rating_zip2, all = TRUE, by.x = "zipcode", by.y = "Zip_Code")
 final_data <- na.omit(final_data)
+str(final_data)
+tail(final_data)
+summary(final_data)
+# write.csv(final_data, file = "final_data.csv")
 # unemploy_Income_0na
 # cost_rating_zip2
 ```
+
 # Test the model
-```{r fig.width=7, fig.height=6,cache=TRUE}
+```{r,cache=TRUE}
 colnames(final_data)
 library(C50)
+# subset the Overal Star Rating
+final_data2 <- final_data[final_data$Summary_Score == "Overall Star Rating", ]
+final_data2 <- final_data[1:10000, ]
 # split into train and test sets
-sample_size <- floor(0.8 * nrow(final_data))
-training_index <- sample(seq_len(nrow(final_data)), size = sample_size)
+set.seed(3443)
+sample_size <- floor(0.8 * nrow(final_data2))
+training_index <- sample(seq_len(nrow(final_data2)), size = sample_size)
 
 train <- final_data[training_index,]
 test <- final_data[-training_index,]
-predictors <- c('unemployment_rate', 'averge_income', 'tier_label', 'mnthly_prm', 'ann_ddctbl', 'copay_max', 'coin_max')
+predictors <- c('unemployment_rate', 'averge_income', 'tier_label', 'mnthly_prm', 'ann_ddctbl')
 train$Star_Rating_Current <- as.factor(train$Star_Rating_Current)
 model <- C5.0.default(x = train[,predictors], y = train$Star_Rating_Current)
+summary(model)
 plot(model)
 
 pred <- predict(model, newdata = test)
