@@ -27,7 +27,7 @@ Medicare.gov released recent two years's data about "Drug and Health Plan" cover
 |[Hospital General Information](https://data.medicare.gov/data/hospital-compare) | 4,806 | "zipcode", "Hospital Ownership"(Government, non-profit, Proprietary, ) |
 
 # Durg and Health Plan with copay, deductible, coinsurance
-```{r,cache=TRUE}
+```{r,cache=TRUE,warning=FALSE}
 # load vwPlanDrugsCostSharing.csv
 drug_cost <- read.csv("./data/2015Med2000_flatfiles/vwPlanDrugsCostSharing.csv", stringsAsFactors = FALSE, na.strings = c("Information Not Available", ""))
 # keep the copay, deductible, and coinsurance
@@ -70,7 +70,7 @@ str(drug_cost4_aggr)
 head(drug_cost4_aggr)
 ```
 # Drug and Health Cost Tier Levle
-```{r,cache=TRUE}
+```{r,cache=TRUE,warning=FALSE}
 # load vwPlanDrugTierCost.csv 
 cost_tier <- read.csv("./data/2015Med2000_flatfiles/vwPlanDrugTierCost.csv", stringsAsFactors = FALSE)
 # keep contract_id, plan_id, languange_id, tier_lable
@@ -169,7 +169,8 @@ final_data <- na.omit(final_data)
 # unemploy_Income_0na
 # cost_rating_zip2
 ```
-```{r,cache=TRUE}
+# Test the model
+```{r fig.width=7, fig.height=6,cache=TRUE}
 colnames(final_data)
 library(C50)
 # split into train and test sets
