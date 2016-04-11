@@ -24,7 +24,7 @@ shinyUI(pageWithSidebar(
         h4('External Predictors:'),
         htmlOutput("external"),
         
-        h4('Ratings:'),
+        h4('Prediction Ratings:'),
         htmlOutput("ratings")
         
         #plotOutput('newPlot'),
