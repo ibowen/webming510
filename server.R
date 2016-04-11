@@ -48,14 +48,21 @@ shinyServer(
             lr_rating <- paste("The Logistic Regression Probability: ", round(lr_pred, 2))
             
             # Decision Tree Modeling
+            
             # decision_tree_model <-
             # dt_pred <- 
             # dt_rating <- 
+            
             # Artificial Neural Network Modeling
+            
             # neural_network_model <- 
             # nn_pred <- 
             # nn_rating <- 
+            
             # Naive Bayes Modeling
+            
+            # nn_pred <- 
+            # nn_rating <- 
             
             HTML(paste(lr_rating, sep = '<br/>'))
         })
