@@ -212,7 +212,7 @@ final_data2_rm4 <- final_data2_rm4[, colnames]
 str(final_data2_rm4)
 # subset the train and test data sets
 set.seed(510)
-sample_size <- floor(0.6 * nrow(final_data2_rm4))
+sample_size <- floor(0.8 * nrow(final_data2_rm4))
 training_index <- sample(seq_len(nrow(final_data2_rm4)), size = sample_size)
 train <- final_data2_rm4[training_index,]
 test <- final_data2_rm4[-training_index,]
@@ -220,7 +220,7 @@ test <- final_data2_rm4[-training_index,]
 model <- glm(formula = sentiment ~ ., family = binomial(link = 'logit'), data = train)
 summary(model)
 # evaluate the model
-pred <- predict(model, newdata = test)
+pred <- predict(model, newdata = test, type = "response")
 pred <- ifelse(pred >= 0.5, 1, 0)
 evaluation <- cbind(test, pred)
 evaluation$correct <- ifelse(evaluation$sentiment == evaluation$pred,1,0)
