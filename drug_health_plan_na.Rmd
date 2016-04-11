@@ -197,7 +197,7 @@ final_data2 <- final_data[, colnames]
 str(final_data2)
 tail(final_data2)
 
-write.csv(final_data, file = "./data/final_data_v2.csv")
+write.csv(final_data2, file = "./data/final_data_v2.csv")
 
 ```
 # Logistic Regression
@@ -225,31 +225,4 @@ pred <- ifelse(pred >= 0.5, 1, 0)
 evaluation <- cbind(test, pred)
 evaluation$correct <- ifelse(evaluation$sentiment == evaluation$pred,1,0)
 sum(evaluation$correct) / nrow(evaluation)
-```
-
-```{r,cache=TRUE,include=FALSE}
-# Decision Tree
-colnames(final_data)
-library(C50)
-# subset the Overal Star Rating
-final_data2 <- final_data[1:10000, ]
-#final_data2 <- final_data
-# split into train and test sets
-set.seed(3443)
-sample_size <- floor(0.8 * nrow(final_data2))
-training_index <- sample(seq_len(nrow(final_data2)), size = sample_size)
-
-train <- final_data[training_index,]
-test <- final_data[-training_index,]
-predictors <- c('unemployment_rate', 'averge_income', 'tier_label', 'mnthly_prm', 'ann_ddctbl', "copay_max", "coin_max")
-train$Star_Rating_Current <- as.factor(train$Star_Rating_Current)
-model <- C5.0.default(x = train[,predictors], y = train$Star_Rating_Current)
-summary(model)
-#plot(model)
-
-pred <- predict(model, newdata = test)
-evaluation <- cbind(test, pred)
-ncol(evaluation)
-evaluation$correct <- ifelse(evaluation$Star_Rating_Current == evaluation$pred,1,0)
-sum(evaluation$correct)/nrow(evaluation)
 ```
