@@ -193,7 +193,7 @@ write.csv(phy_unemploy_income_insur_0na, file = "./external_data_v2.csv")
 final_data <- merge(phy_unemploy_income_insur_0na, cost_rating_zip2, all = TRUE, by.x = "zip_code", by.y = "Zip_Code")
 final_data <- na.omit(final_data)
 colnames <- c('experience', 'spec_count', 'unemployment_rate', 'averge_income', 'avgerage_physician', 'tier_label', 'mnthly_prm', 'ann_ddctbl', 'copay_max', 'coin_max', 'Star_Rating_Current')
-final_data2 <- final_data[, colnames]
+final_data2 <- final_data2[, colnames]
 str(final_data2)
 tail(final_data2)
 
