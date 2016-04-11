@@ -86,10 +86,6 @@ img {
 </thead>
 <tbody>
 <tr class="odd">
-<td align="left">K-means, SOM</td>
-<td align="left">Before getting into the prediction modeling, we need first explore the structure of the datasets. K-means is one easy and light algorithms to finish this job. For further exploring, we might use SOM to do the same thing.</td>
-</tr>
-<tr class="even">
 <td align="left">Multivariant Regession, Naive Bayes, Decision Tree, ANN</td>
 <td align="left">Since the project is one supervised problem, we are going to apply multiple prediction models to the datasets. And we will choose the final one with the highest accuracy.</td>
 </tr>
@@ -361,16 +357,37 @@ str(phy1)</code></pre>
 ##  $ experience    : num  11.2 11.2 11.2 11.2 11.2 ...
 ##  $ spec_count    : int  10 10 10 10 10 10 10 10 10 10 ...</code></pre>
 </div>
-<div id="physician-guyang-1" class="section level1">
-<h1>Physician Guyang</h1>
-<pre class="r"><code>phy2 &lt;- read.csv(file = &quot;./data/physician_info.csv&quot;, stringsAsFactors = FALSE)
-str(phy2)</code></pre>
-<pre><code>## 'data.frame':    13546 obs. of  5 variables:
-##  $ X                  : int  1 2 3 4 5 6 7 8 9 10 ...
-##  $ zipcode            : int  7 8 9 79 80 428 600 601 602 611 ...
-##  $ num.of.physicians  : int  2 1 2 1 2 1 2 14 69 2 ...
-##  $ avg.graduation.year: int  1987 1982 1984 2013 1997 2012 1988 1991 1993 1985 ...
-##  $ avg.group.member   : num  2 0 1 0 0 0 0 0 0 0 ...</code></pre>
+<div id="insurance-coverage" class="section level1">
+<h1>Insurance Coverage</h1>
+<pre class="r"><code>#Use census.gov developer API to get the insurance related data
+#http://api.census.gov/data/timeseries/healthins/sahie?get=NAME,NIC_PT,NUI_PT,PCTIC_PT,PCTUI_PT&amp;for=COUNTY:*&amp;time=2013
+#install.packages(&quot;rjson&quot;)
+library(rjson)
+json_file &lt;- &quot;./data/sahie.json&quot;
+json_data &lt;- data.frame(fromJSON(file = json_file))
+insurance_data &lt;- t(json_data)
+rownames(insurance_data) &lt;- NULL
+
+colnames(insurance_data) &lt;- insurance_data[1,]
+insurance_data &lt;- data.frame(insurance_data[-1,], stringsAsFactors = FALSE)
+
+insurance_data$CountyFPISCode &lt;- with(insurance_data, paste(state, county, sep = &quot;&quot;))
+insurance_data$PCTIC_PT &lt;- as.numeric(insurance_data$PCTIC_PT)</code></pre>
+<pre><code>## Warning: NAs introduced by coercion</code></pre>
+<pre class="r"><code>#write.csv(json_data1, file = &quot;./insurance_coverage_2013.csv&quot;)
+insurance_data2 &lt;- insurance_data[, c(&quot;PCTIC_PT&quot;, &quot;CountyFPISCode&quot;)]
+str(insurance_data2)</code></pre>
+<pre><code>## 'data.frame':    3143 obs. of  2 variables:
+##  $ PCTIC_PT      : num  86.6 82.5 82.6 85 82.4 81.5 84.5 84 83.2 83.6 ...
+##  $ CountyFPISCode: chr  &quot;01001&quot; &quot;01003&quot; &quot;01005&quot; &quot;01007&quot; ...</code></pre>
+<pre class="r"><code>head(insurance_data2)</code></pre>
+<pre><code>##   PCTIC_PT CountyFPISCode
+## 1     86.6          01001
+## 2     82.5          01003
+## 3     82.6          01005
+## 4     85.0          01007
+## 5     82.4          01009
+## 6     81.5          01011</code></pre>
 </div>
 <div id="external-features-combination-by-zip-code" class="section level1">
 <h1>External Features Combination: by zip code</h1>
@@ -383,22 +400,26 @@ str(phy2)</code></pre>
 unemploy_Income_0na &lt;- na.omit(unemploy_Income)
 unemploy_Income_0na$averge_income &lt;- unemploy_Income_0na$total_income / unemploy_Income_0na$polulation
 phy_unemploy_income &lt;- merge(phy1, unemploy_Income_0na, all = TRUE, by.x = &quot;zip_code&quot;, by.y = &quot;zipcode&quot;)
-phy_unemploy_income_0na &lt;- na.omit(phy_unemploy_income)
-str(phy_unemploy_income_0na)</code></pre>
-<pre><code>## 'data.frame':    36755 obs. of  10 variables:
-##  $ zip_code         : int  1001 1002 1005 1008 1010 1011 1011 1011 1012 1020 ...
-##  $ CountyFIPSCode   : int  25013 25015 25027 25013 25013 25015 25003 25013 25015 25013 ...
-##  $ count            : int  224 79 402 224 224 79 126 224 79 224 ...
-##  $ experience       : num  24.2 20.9 20.5 24.2 24.2 ...
-##  $ spec_count       : int  44 27 42 44 44 27 31 44 27 44 ...
-##  $ polulation       : num  16576 36794 5077 1235 3348 ...
-##  $ unemployment_rate: num  3.97 7.95 5.68 3.76 2.95 4.97 4.97 4.97 2.83 4.14 ...
-##  $ STATE            : chr  &quot;MA&quot; &quot;MA&quot; &quot;MA&quot; &quot;MA&quot; ...
-##  $ total_income     : num  477601 762298 129645 38867 132147 ...
-##  $ averge_income    : num  28.8 20.7 25.5 31.5 39.5 ...
-##  - attr(*, &quot;na.action&quot;)=Class 'omit'  Named int [1:17017] 1 2 3 4 5 6 7 8 9 10 ...
-##   .. ..- attr(*, &quot;names&quot;)= chr [1:17017] &quot;1&quot; &quot;2&quot; &quot;3&quot; &quot;4&quot; ...</code></pre>
-<pre class="r"><code>write.csv(phy_unemploy_income_0na, file = &quot;./external_data.csv&quot;)</code></pre>
+phy_unemploy_income_insur &lt;- merge(insurance_data2, phy_unemploy_income, all = TRUE, by.x = &quot;CountyFPISCode&quot;, by.y = &quot;CountyFIPSCode&quot;)
+phy_unemploy_income_insur_0na &lt;- na.omit(phy_unemploy_income_insur)
+phy_unemploy_income_insur_0na$avgerage_physician = round(phy_unemploy_income_insur_0na$polulation / (phy_unemploy_income_insur_0na$count + 1))
+str(phy_unemploy_income_insur_0na)</code></pre>
+<pre><code>## 'data.frame':    32688 obs. of  12 variables:
+##  $ CountyFPISCode    : chr  &quot;10001&quot; &quot;10001&quot; &quot;10001&quot; &quot;10001&quot; ...
+##  $ PCTIC_PT          : num  89.6 89.6 89.6 89.6 89.6 89.6 89.6 89.6 89.6 89.6 ...
+##  $ zip_code          : int  19953 19943 19952 19938 19904 19901 19950 19954 19964 19934 ...
+##  $ count             : int  165 165 165 165 165 165 165 165 165 165 ...
+##  $ experience        : num  19.5 19.5 19.5 19.5 19.5 ...
+##  $ spec_count        : int  40 40 40 40 40 40 40 40 40 40 ...
+##  $ polulation        : num  4218 9715 8343 5819 27676 ...
+##  $ unemployment_rate : num  3.38 3.51 4.13 4.33 7.73 4.69 4.12 1.92 5.48 4.82 ...
+##  $ STATE             : chr  &quot;DE&quot; &quot;DE&quot; &quot;DE&quot; &quot;DE&quot; ...
+##  $ total_income      : num  91467 260286 204811 214247 762809 ...
+##  $ averge_income     : num  21.7 26.8 24.5 36.8 27.6 ...
+##  $ avgerage_physician: num  25 59 50 35 167 190 32 9 7 58 ...
+##  - attr(*, &quot;na.action&quot;)=Class 'omit'  Named int [1:21400] 1 2 3 4 5 6 7 8 9 10 ...
+##   .. ..- attr(*, &quot;names&quot;)= chr [1:21400] &quot;1&quot; &quot;2&quot; &quot;3&quot; &quot;4&quot; ...</code></pre>
+<pre class="r"><code>write.csv(phy_unemploy_income_insur_0na, file = &quot;./external_data_v2.csv&quot;)</code></pre>
 </div>
 <div id="combine-internal-and-external-data" class="section level1">
 <h1>Combine Internal and External Data</h1>
@@ -408,24 +429,120 @@ str(phy_unemploy_income_0na)</code></pre>
 <li>phy_unemploy_income_0na</li>
 <li>cost_rating_zip2</li>
 </ul>
-<pre class="r"><code>final_data &lt;- merge(phy_unemploy_income_0na, cost_rating_zip2, all = TRUE, by.x = &quot;zip_code&quot;, by.y = &quot;Zip_Code&quot;)
+<pre class="r"><code>final_data &lt;- merge(phy_unemploy_income_insur_0na, cost_rating_zip2, all = TRUE, by.x = &quot;zip_code&quot;, by.y = &quot;Zip_Code&quot;)
 final_data &lt;- na.omit(final_data)
-final_data$Star_Rating_Current &lt;- as.numeric(final_data$Star_Rating_Current)
-#str(final_data)
-#tail(final_data)
-
-write.csv(final_data, file = &quot;./data/final_data.csv&quot;)
+colnames &lt;- c('PCTIC_PT', 'experience', 'spec_count', 'unemployment_rate', 'averge_income', 'avgerage_physician', 'tier_label', 'mnthly_prm', 'ann_ddctbl', 'copay_max', 'coin_max', 'Star_Rating_Current')
+final_data2 &lt;- final_data[, colnames]
+str(final_data2)</code></pre>
+<pre><code>## 'data.frame':    7748 obs. of  12 variables:
+##  $ PCTIC_PT           : num  81.5 81.5 81.5 81.5 81.5 81.5 85.6 85.6 81.5 81.5 ...
+##  $ experience         : num  24.4 24.4 24.4 24.4 24.4 ...
+##  $ spec_count         : int  55 55 55 55 55 55 53 53 55 55 ...
+##  $ unemployment_rate  : num  5.06 5.06 2.68 2.68 2.67 2.67 9.38 9.38 1.09 1.09 ...
+##  $ averge_income      : num  30.7 30.7 55.8 55.8 67.6 ...
+##  $ avgerage_physician : num  72 72 11 11 39 39 31 31 18 18 ...
+##  $ tier_label         : int  6 5 6 5 6 5 5 6 6 5 ...
+##  $ mnthly_prm         : num  0 0 0 0 0 0 0 0 0 0 ...
+##  $ ann_ddctbl         : num  320 0 320 0 320 0 0 320 320 0 ...
+##  $ copay_max          : num  90 88 90 88 90 88 88 90 90 88 ...
+##  $ coin_max           : num  25 33 25 33 25 33 33 25 25 33 ...
+##  $ Star_Rating_Current: chr  &quot;3.5&quot; &quot;3&quot; &quot;3.5&quot; &quot;3&quot; ...</code></pre>
+<pre class="r"><code>tail(final_data2)</code></pre>
+<pre><code>##       PCTIC_PT experience spec_count unemployment_rate averge_income
+## 40300     83.5   19.18231         43              6.60      24.26696
+## 40304     83.5   19.18231         43              6.11      21.75334
+## 40305     83.5   19.18231         43              7.51      33.09364
+## 40306     83.5   19.18231         43             16.64      26.17839
+## 40309     83.5   19.18231         43              4.85      44.60332
+## 40310     83.5   19.18231         43             10.26      37.34034
+##       avgerage_physician tier_label mnthly_prm ann_ddctbl copay_max
+## 40300                 48          6         23          0        95
+## 40304                 56          6         23          0        95
+## 40305                 29          6         23          0        95
+## 40306                 34          6         23          0        95
+## 40309                 66          6         23          0        95
+## 40310                 42          6         23          0        95
+##       coin_max Star_Rating_Current
+## 40300       33                   4
+## 40304       33                   4
+## 40305       33                   4
+## 40306       33                   4
+## 40309       33                   4
+## 40310       33                   4</code></pre>
+<pre class="r"><code>write.csv(final_data, file = &quot;./data/final_data_v2.csv&quot;)
 # unemploy_Income_0na
 # cost_rating_zip2</code></pre>
 </div>
-<div id="hospital-type" class="section level1">
-<h1>Hospital Type</h1>
-</div>
-<div id="rcachetrue-loading-hospital-data-we-only-need-hospital_data---read.csv.datahospital_revised_flatfileshospital-general-information.csv-stringsasfactors-false-hospital_data2---hospital_data-chospital.name-state-zip.code-county.name-hospital.type-headhospital_data2-summaryhospital_data2-strhospital_data2" class="section level1">
-<h1><code>{r,cache=TRUE} # # loading hospital data, we only need  # hospital_data &lt;- read.csv(&quot;./data/Hospital_Revised_Flatfiles/Hospital General Information.csv&quot;, stringsAsFactors = FALSE) # hospital_data2 &lt;- hospital_data[, c(&quot;Hospital.Name&quot;, &quot;State&quot;, &quot;ZIP.Code&quot;, &quot;County.Name&quot;, &quot;Hospital.Type&quot;)] #  head(hospital_data2) #  summary(hospital_data2) #  str(hospital_data2) #</code></h1>
-</div>
-<div id="test-the-model" class="section level1">
-<h1>Test the model</h1>
+<div id="logistic-regression" class="section level1">
+<h1>Logistic Regression</h1>
+<pre class="r"><code># remove neutral 4 points, and change the label into 1 and 0
+final_data2_rm4 &lt;- final_data2[final_data2$Star_Rating_Current != 4, ]
+# transfer the label into binary value
+final_data2_rm4$sentiment &lt;- ifelse(final_data2_rm4$Star_Rating_Current &gt; 4,1,0)
+# subset the need columns for modeling
+colnames &lt;- c('PCTIC_PT', 'experience', 'spec_count', 'unemployment_rate', 'averge_income', 'avgerage_physician', 'tier_label', 'mnthly_prm', 'ann_ddctbl', 'copay_max', 'coin_max', 'sentiment')
+final_data2_rm4 &lt;- final_data2_rm4[, colnames]
+str(final_data2_rm4)</code></pre>
+<pre><code>## 'data.frame':    6659 obs. of  12 variables:
+##  $ PCTIC_PT          : num  81.5 81.5 81.5 81.5 81.5 81.5 85.6 85.6 81.5 81.5 ...
+##  $ experience        : num  24.4 24.4 24.4 24.4 24.4 ...
+##  $ spec_count        : int  55 55 55 55 55 55 53 53 55 55 ...
+##  $ unemployment_rate : num  5.06 5.06 2.68 2.68 2.67 2.67 9.38 9.38 1.09 1.09 ...
+##  $ averge_income     : num  30.7 30.7 55.8 55.8 67.6 ...
+##  $ avgerage_physician: num  72 72 11 11 39 39 31 31 18 18 ...
+##  $ tier_label        : int  6 5 6 5 6 5 5 6 6 5 ...
+##  $ mnthly_prm        : num  0 0 0 0 0 0 0 0 0 0 ...
+##  $ ann_ddctbl        : num  320 0 320 0 320 0 0 320 320 0 ...
+##  $ copay_max         : num  90 88 90 88 90 88 88 90 90 88 ...
+##  $ coin_max          : num  25 33 25 33 25 33 33 25 25 33 ...
+##  $ sentiment         : num  0 0 0 0 0 0 0 0 0 0 ...</code></pre>
+<pre class="r"><code># subset the train and test data sets
+set.seed(510)
+sample_size &lt;- floor(0.6 * nrow(final_data2_rm4))
+training_index &lt;- sample(seq_len(nrow(final_data2_rm4)), size = sample_size)
+train &lt;- final_data2_rm4[training_index,]
+test &lt;- final_data2_rm4[-training_index,]
+# train the model
+model &lt;- glm(formula = sentiment ~ ., family = binomial(link = 'logit'), data = train)
+summary(model)</code></pre>
+<pre><code>## 
+## Call:
+## glm(formula = sentiment ~ ., family = binomial(link = &quot;logit&quot;), 
+##     data = train)
+## 
+## Deviance Residuals: 
+##        Min          1Q      Median          3Q         Max  
+## -2.179e-04  -2.100e-08  -2.100e-08  -2.100e-08   2.154e-04  
+## 
+## Coefficients:
+##                      Estimate Std. Error z value Pr(&gt;|z|)
+## (Intercept)         6.238e+02  1.319e+05   0.005    0.996
+## PCTIC_PT            6.815e+00  5.621e+02   0.012    0.990
+## experience          1.240e+01  6.733e+02   0.018    0.985
+## spec_count          2.628e-01  1.370e+02   0.002    0.998
+## unemployment_rate   8.441e-02  3.286e+02   0.000    1.000
+## averge_income       2.867e-03  6.069e+01   0.000    1.000
+## avgerage_physician  1.691e-03  6.922e+00   0.000    1.000
+## tier_label          2.798e+02  1.440e+04   0.019    0.984
+## mnthly_prm          1.300e+01  1.927e+03   0.007    0.995
+## ann_ddctbl         -3.857e-01  5.150e+01  -0.007    0.994
+## copay_max          -3.374e+01  1.813e+03  -0.019    0.985
+## coin_max           -3.161e+00  2.787e+03  -0.001    0.999
+## 
+## (Dispersion parameter for binomial family taken to be 1)
+## 
+##     Null deviance: 1.8425e+03  on 3994  degrees of freedom
+## Residual deviance: 1.1793e-06  on 3983  degrees of freedom
+## AIC: 24
+## 
+## Number of Fisher Scoring iterations: 25</code></pre>
+<pre class="r"><code># evaluate the model
+pred &lt;- predict(model, newdata = test)
+pred &lt;- ifelse(pred &gt;= 0.5, 1, 0)
+evaluation &lt;- cbind(test, pred)
+evaluation$correct &lt;- ifelse(evaluation$sentiment == evaluation$pred,1,0)
+sum(evaluation$correct) / nrow(evaluation)</code></pre>
+<pre><code>## [1] 1</code></pre>
 </div>
 
 
