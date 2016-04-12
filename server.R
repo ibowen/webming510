@@ -1,4 +1,5 @@
 library(shiny)
+library(C50)
 # file path for the final data set
 filepath <- "./data/final_data_v2.csv"
 # read files
@@ -8,14 +9,11 @@ if(!exists(filepath)) {
     data_rm4 <- data[data$Star_Rating_Current != 4, ]
     # transfer the label into binary value
     data_rm4$sentiment <- ifelse(data_rm4$Star_Rating_Current > 4,1,0)
+    # transfer sentiment to factor variables
+    data_rm4$sentiment <- factor(data_rm4$sentiment, levels = c(0,1), labels = c('Bad','Good'))
     # subset the need columns for modeling
     colnames <- c('experience', 'spec_count', 'unemployment_rate', 'averge_income', 'avgerage_physician', 'tier_label', 'mnthly_prm', 'ann_ddctbl', 'copay_max', 'coin_max', 'sentiment')
     data_rm4 <- data_rm4[, colnames]
-    # subset the train and test data sets
-    set.seed(510)
-    sample_size <- floor(0.8 * nrow(data_rm4))
-    training_index <- sample(seq_len(nrow(data_rm4)), size = sample_size)
-    train <- data_rm4[training_index,]
 }
 
 
@@ -43,15 +41,15 @@ shinyServer(
             predictors <- data.frame(input$experience, input$spec_type, input$unemployment, input$income, input$physician, input$tier, input$premium, input$deductible, input$copayment, input$coinsurance, 0)
             colnames(predictors) <- colnames
             # Logistic Regression Modeling
-            logsitic_regression_model = glm(formula = sentiment ~ ., family = binomial(link = 'logit'), data = train)
+            logsitic_regression_model = glm(formula = sentiment ~ ., family = binomial(link = 'logit'), data = data_rm4)
             lr_pred <- predict(logsitic_regression_model, newdata = predictors, type = "response")
-            lr_rating <- paste("The Logistic Regression Probability: ", round(lr_pred, 2))
+            #lr_rating <- paste("The Logistic Regression Probability: ", round(lr_pred, 2))
+            lr_rating <- paste("The Logistic Regression Probability: ", ifelse(lr_pred > 0.5, 'Good', 'Bad'))
             
             # Decision Tree Modeling
-            
-            # decision_tree_model <-
-            # dt_pred <- 
-            # dt_rating <- 
+            decision_tree_model <- C5.0.default(x = data_rm4[,colnames], y = data_rm4$sentiment)
+            dt_pred <- predict(decision_tree_model, newdata = predictors)
+            dt_rating <- paste("The Decision Tree Prediction: ", dt_pred)
             
             # Artificial Neural Network Modeling
             
@@ -64,7 +62,7 @@ shinyServer(
             # nn_pred <- 
             # nn_rating <- 
             
-            HTML(paste(lr_rating, sep = '<br/>'))
+            HTML(paste(lr_rating, dt_rating, sep = '<br/>'))
         })
     }
 )

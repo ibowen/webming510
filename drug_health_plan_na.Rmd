@@ -172,17 +172,16 @@ str(phy1)
 # External Features Combination: by zip code
 - Data Points after preprocessing: 25,376 obs. of  6 variables
 - variables:
-- phy1, phy2, income_data2, income_data2
+- phy1, income_data2
 ```{r,cache=TRUE}
 unemploy_Income <- merge(unemployment_data2, income_data2, all = TRUE, by.x = "zipcode", by.y = "ZIPCODE")
 unemploy_Income_0na <- na.omit(unemploy_Income)
 unemploy_Income_0na$averge_income <- unemploy_Income_0na$total_income / unemploy_Income_0na$polulation
 phy_unemploy_income <- merge(phy1, unemploy_Income_0na, all = TRUE, by.x = "zip_code", by.y = "zipcode")
-phy_unemploy_income_insur <- merge(insurance_data2, phy_unemploy_income, all = TRUE, by.x = "CountyFPISCode", by.y = "CountyFIPSCode")
-phy_unemploy_income_insur_0na <- na.omit(phy_unemploy_income_insur)
-phy_unemploy_income_insur_0na$avgerage_physician = round(phy_unemploy_income_insur_0na$polulation / (phy_unemploy_income_insur_0na$count + 1))
-str(phy_unemploy_income_insur_0na)
-write.csv(phy_unemploy_income_insur_0na, file = "./external_data_v2.csv")
+phy_unemploy_income_0na <- na.omit(phy_unemploy_income)
+phy_unemploy_income_0na$avgerage_physician = round(phy_unemploy_income_0na$polulation / (phy_unemploy_income_0na$count + 1))
+str(phy_unemploy_income_0na)
+write.csv(phy_unemploy_income_0na, file = "./external_data_v2.csv")
 ```
 # Combine Internal and External Data
 - Data Points after preprocessing: 533,617 obs. of  14 variables
@@ -190,7 +189,7 @@ write.csv(phy_unemploy_income_insur_0na, file = "./external_data_v2.csv")
 - phy_unemploy_income_0na
 - cost_rating_zip2
 ```{r,cache=TRUE}
-final_data <- merge(phy_unemploy_income_insur_0na, cost_rating_zip2, all = TRUE, by.x = "zip_code", by.y = "Zip_Code")
+final_data <- merge(phy_unemploy_income_0na, cost_rating_zip2, all = TRUE, by.x = "zip_code", by.y = "Zip_Code")
 final_data <- na.omit(final_data)
 colnames <- c('experience', 'spec_count', 'unemployment_rate', 'averge_income', 'avgerage_physician', 'tier_label', 'mnthly_prm', 'ann_ddctbl', 'copay_max', 'coin_max', 'Star_Rating_Current')
 final_data2 <- final_data[, colnames]
@@ -205,7 +204,7 @@ write.csv(final_data2, file = "./data/final_data_v2.csv", row.names = FALSE)
 # remove neutral 4 points, and change the label into 1 and 0
 final_data2_rm4 <- final_data2[final_data2$Star_Rating_Current != 4, ]
 # transfer the label into binary value
-final_data2_rm4$sentiment <- ifelse(final_data2_rm4$Star_Rating_Current > 4,1,0)
+final_data2_rm4$sentiment <- as.factor(ifelse(final_data2_rm4$Star_Rating_Current > 4,1,0))
 # subset the need columns for modeling
 colnames <- c('experience', 'spec_count', 'unemployment_rate', 'averge_income', 'avgerage_physician', 'tier_label', 'mnthly_prm', 'ann_ddctbl', 'copay_max', 'coin_max', 'sentiment')
 final_data2_rm4 <- final_data2_rm4[, colnames]
