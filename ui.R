@@ -16,7 +16,7 @@ shinyUI(pageWithSidebar(
     ),
     
     mainPanel(
-        h2('Drug and Health Plan Design Panel'),
+        h4('Drug and Health Plan Design Panel'),
         helpText("This application is for predicting the customer ratings for the drug and Health Plan"),
         h4('Internal Predictors:'),
         htmlOutput("internal"),
@@ -24,14 +24,8 @@ shinyUI(pageWithSidebar(
         h4('External Predictors:'),
         htmlOutput("external"),
         
-        h4('Logistic Prediction Ratings:'),
-        htmlOutput("ratings1"),
-        
-        h4('Dicision Prediction Ratings:'),
-        htmlOutput("ratings2"),
-        
-        h4('Naive Bayes Ratings:'),
-        htmlOutput("ratings4")
+        h4('Prediction Ratings:'),
+        htmlOutput("ratings")
         
         #plotOutput('newPlot'),
         #textOutput("result")
