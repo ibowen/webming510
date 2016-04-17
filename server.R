@@ -1,6 +1,7 @@
 library(shiny)
 library(C50)
 library(e1071)
+library (nnet)
 # file path for the final data set
 filepath <- "./data/final_data_v2.csv"
 # read files
@@ -46,25 +47,25 @@ shinyServer(
             lr_pred <- predict(logsitic_regression_model, newdata = predictors, type = "response")
             #lr_rating <- paste("The Logistic Regression Probability: ", round(lr_pred, 2))
             lr_rating <- paste("The Logistic Regression Probability: ", ifelse(lr_pred > 0.5, 'Good', 'Bad'))
-            
+
             # Decision Tree Modeling
             decision_tree_model <- C5.0.default(x = data_rm4[,colnames], y = data_rm4$sentiment)
             dt_pred <- predict(decision_tree_model, newdata = predictors)
             dt_rating <- paste("The Decision Tree Prediction: ", dt_pred)
-            
+
             # Artificial Neural Network Modeling
-            
-            # neural_network_model <- 
-            # nn_pred <- 
-            # nn_rating <- 
-            
+
+            neural_network_model <- nnet(formula =  sentiment~.-sentiment, data =train, decay = 0.5, size = 6)
+            nn_pred <- predict(neural_network_model, newdata = predictors, type='class')
+            nn_rating <- paste("The Neural Network Prediction: ", ifelse(lr_pred > 0.5, 'Good', 'Bad'))
+
             # Naive Bayes Modeling
             naive_bayes_model <- naiveBayes(sentiment~ . , data=data_rm4)
             nb_pred <- predict(naive_bayes_model, newdata = predictors, type = 'class')
             nb_rating <- paste("The Naive Bayes Prediction: ", nb_pred)
 
-            
-            HTML(paste(lr_rating, dt_rating, nb_rating, sep = '<br/>'))
+
+            HTML(paste(lr_rating, dt_rating, nb_rating, nn_rating, sep = '<br/>'))
         })
     }
 )
