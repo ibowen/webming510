@@ -55,7 +55,7 @@ shinyServer(
 
             # Artificial Neural Network Modeling
 
-            neural_network_model <- nnet(formula =  sentiment~.-sentiment, data =train, decay = 0.5, size = 6)
+            neural_network_model <- nnet(formula =  sentiment~.-sentiment, data =data_rm4, decay = 0.5, size = 6)
             nn_pred <- predict(neural_network_model, newdata = predictors, type='class')
             nn_rating <- paste("The Neural Network Prediction: ", ifelse(lr_pred > 0.5, 'Good', 'Bad'))
 
