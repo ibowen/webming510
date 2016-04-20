@@ -3,7 +3,7 @@ library(C50)
 library(e1071)
 library (nnet)
 # file path for the final data set
-filepath <- "./data/final_data_v2.csv"
+filepath <- "./data/final_data_v3.csv"
 # read files
 if(!exists(filepath)) {
     data <- read.csv(file = filepath)

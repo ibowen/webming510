@@ -37,6 +37,5 @@ shinyUI(fluidPage(
             h3(htmlOutput("ratings"))
         )
     )
-    
     )
 )
