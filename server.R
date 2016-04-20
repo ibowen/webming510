@@ -59,12 +59,12 @@ shinyServer(function(input, output, session) {
     # in bounds right now
     zipsInBounds <- reactive({
         if (is.null(input$map_bounds))
-          return(data_map[FALSE,])
+          return(data[FALSE,])
         bounds <- input$map_bounds
         latRng <- range(bounds$north, bounds$south)
         lngRng <- range(bounds$east, bounds$west)
 
-        subset(data_map,
+        subset(data,
                latitude >= latRng[1] & latitude <= latRng[2] &
                  longitude >= lngRng[1] & longitude <= lngRng[2])
     })
@@ -78,14 +78,26 @@ shinyServer(function(input, output, session) {
     if (colorBy == "average_physician") {
         #Color and palette are treated specially in the "superzip" case, because
         #the values are categorical instead of continuous.
-        colorData <- ifelse(data$average_physician <= 10, "0-20", ifelse(data$average_physician<=20, "10-20", ifelse(data$average_physician <= 50, "20-50", "50+")))
+        colorData <- ifelse(data$average_physician <= 100, "0-100", ifelse(data$average_physician<=500, "100-500", ifelse(data$average_physician <= 1000, "500-1000", "1000+")))
+        pal <- colorFactor("Spectral", colorData)
+        radius <- data[[colorBy]]  / max(data[[colorBy]]) * 60000 
+    } else {
+      if(colorBy == "unemployment_rate") {
+        colorData <- ifelse(data$unemployment_rate <= 2.5, "0%-2.5%", ifelse(data$unemployment_rate<=4.5, "2.5%-4.5%", ifelse(data$unemployment_rate <= 8.0, "4.5%-8%", "8%+")))
         pal <- colorFactor("Spectral", colorData)
         radius <- data[[colorBy]] / max(data[[colorBy]]) * 50000
-    } else {
-        colorData <- data[[colorBy]]
-        pal <- colorBin("Spectral", colorData, 7, pretty = FALSE)
-        radius <- data[[colorBy]] / max(data[[colorBy]]) * 20000
-     }
+      } else{
+        if(colorBy == "average_income") {
+          colorData <- ifelse(data$average_income <= 10, "0-10", ifelse(data$average_income<=25, "10-25", ifelse(data$unemployment_rate <= 50, "25-50", "50+")))
+          pal <- colorFactor("Spectral", colorData)
+          radius <- data[[colorBy]] / max(data[[colorBy]]) * 50000
+        } else{
+          colorData <- data[[colorBy]]
+          pal <- colorBin("Spectral", colorData, 7, pretty = FALSE)
+          radius <- data[[colorBy]] / max(data[[colorBy]]) * 20000
+        }
+      }
+    }
 
 
     leafletProxy("map", data = data) %>%

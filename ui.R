@@ -9,7 +9,8 @@ vars <- c(
   "Average Household Income(,000$)" = "average_income",
   "Average Citizens per Physician" = "average_physician",
   "Unemployment Rate(%)" = "unemployment_rate",
-  "Physician Specialties" = "spec_count"
+  "Physician Specialties" = "spec_count",
+  "Star Rating" = "Star_Rating_Current"
 )
 
 
@@ -28,13 +29,14 @@ shinyUI(navbarPage("Durg and Health Plan Test Panel", id="nav",
                           draggable = TRUE, top = 60, left = "auto", right = 20, bottom = "auto",
                           width = 330, height = "auto",
 
-                          h2("ZIP explorer"),
+                          h2("ZIP Explorer"),
 
-                          selectInput("color", "Group By", vars)
+                          selectInput("color", "Group By", vars),
+                          submitButton("submit")
                           )
             ),
             tags$div(id="cite",
-                     'Data compiled for ', tags$em('Coming Apart: The Medicare Data, 2014'), ' by 510 team-2'
+                     'Data compiled for ', tags$em('Coming Apart: The Medicare Data, 2014'), ' By 510_Team_2'
             )
     ),
                 tabPanel("Prediction Panel", 
