@@ -1,0 +1,42 @@
+---
+title       : Drug and Health Plan Prediction
+subtitle    : Web Mining 510, 2016
+author      : Bowen Liu, Yang Gu, Yixian Liu, Siqian Zhou, Farideh Farahnak
+job         : 
+framework   : io2012        # {io2012, html5slides, shower, dzslides, ...}
+highlighter : highlight.js  # {highlight.js, prettify, highlight}
+hitheme     : tomorrow      # 
+widgets     : [mathjax]            # {mathjax, quiz, bootstrap}
+mode        : standalone # {standalone, draft}
+knit        : slidify::knit2slides
+---
+
+
+## Introduction
+
+Health and drug insurance plans are among the most important mechanisms ensuring that American patients have access to the care they need. Data about "Drug and Health Plan" coverage around the country from the last two years have been released by Medicare.gov. The data includes who, when, where, and how the plans are used. 
+
+The project goal set by team is finding out how the plan-related and environment-based features affect the rating of a particular insurance plan. Combining both set of factors, we aim to build a model to predict the rating for new medical plans.
+
+
+---
+
+## Improvements since midpoint
+
+1.	Removed the neutral labels of 4 and train the model using the rest of extreme data.
+2.	Added external features on physician information.
+3.	Used logistic regression to train the model.
+4.  Deployed the project on shiny with interaction panels.
+
+
+---
+
+## Project links:
+
+[Project Website](https://bowenliu.shinyapps.io/dataproduct3/)
+
+[Reproductible Coding](http://rpubs.com/bowenliu/webming_coding)
+
+
+---
+
