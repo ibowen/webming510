@@ -33,7 +33,7 @@ The project goal set by team is finding out how the plan-related and environment
 
 ## Project links:
 
-[Project Website](https://bowenliu.shinyapps.io/dataproduct3/)
+[Project Website](https://bowenliu.shinyapps.io/drug_heal_plan_prediction/)
 
 [Reproductible Coding](http://rpubs.com/bowenliu/webming_coding)
 

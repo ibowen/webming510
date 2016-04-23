@@ -15,7 +15,7 @@ vars <- c(
 
 
 shinyUI(navbarPage("Durg and Health Plan Test Panel", id="nav",
-    tabPanel("Interactive map",
+    tabPanel("Interactive Map",
         div(class="outer",
             tags$head(
               # Include our custom CSS

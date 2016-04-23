@@ -181,7 +181,7 @@ doctors <- read.csv('./data/physician.csv', stringsAsFactors = FALSE)
 myVars <- c("NPI", "Graduation.year","Primary.specialty","City", "State", "Zip.Code")
 doctors <- doctors[myVars]
 doctors <- doctors[complete.cases(doctors),]
-
+head(doctors)
 #deal with zip code format 
 doctors$Zip.Code<- as.numeric(doctors$Zip.Code)
 doctors$set<-ifelse(doctors$Zip.Code > 99999,1, 2)
@@ -205,7 +205,7 @@ doctors$set <- NULL #remove dummy variable
 doctors[2]<-2016 - doctors$Graduation.year
 names(doctors)[2] <- "experience"
 names(doctors)[6] <- "zip_code"
-
+head(doctors)
 #combine geography information. Fill in zips w/o doctors w/ 0
 geography <-read.csv('./data/geographyGood.csv', stringsAsFactors = FALSE)
 #myVars <- c("CountyFIPSCode","zip_code")
@@ -242,8 +242,6 @@ docSpec <- ddply(docSpec, .(CountyFIPSCode), mutate, count = length(unique(Prima
 docSpec$Primary.specialty <- NULL
 docSpec <- unique((docSpec))
 names(docSpec)[2]<- "spec_count"
-docSpec$zip_code<-NULL
-docSpec <- unique((docSpec))
 
 docNum <- merge(x=docNum, y=docSpec, by="CountyFIPSCode", all.x = TRUE )
 #docNum$count<-ifelse(docNum$experience == 0,0, docNum$count)
@@ -343,7 +341,7 @@ ggplot(data = plotdata, aes(factor(Star_Rating_Current), average_income)) +
 ggplot(data = plotdata, aes(factor(Star_Rating_Current), average_physician)) +
     #theme(legend.position="bottom", legend.title=element_blank()) +
     guides(fill=FALSE) +
-    labs(x="Rating Scores", y="Average Physician Number") +
+    labs(x="Rating Scores", y="Average Citizens per Physician") +
     geom_boxplot(aes(fill = factor(Star_Rating_Current)))
 
 # external feature plotting
