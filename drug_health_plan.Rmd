@@ -178,9 +178,11 @@ tail(income_data2)
 # indexed by each zip code (e.g. 5 zip codes in one county would all have same info)
 #read physician data set, select subset, remove non-complete rows
 doctors <- read.csv('./data/physician.csv', stringsAsFactors = FALSE)
+str(doctors)
 myVars <- c("NPI", "Graduation.year","Primary.specialty","City", "State", "Zip.Code")
 doctors <- doctors[myVars]
 doctors <- doctors[complete.cases(doctors),]
+str(doctors)
 head(doctors)
 #deal with zip code format 
 doctors$Zip.Code<- as.numeric(doctors$Zip.Code)
@@ -400,7 +402,7 @@ test <- final_data3_rm4[-training_index,]
 
 ```{r,cache=TRUE,warning=FALSE}
 # train the model
-logsitic_regression_model <- glm(formula = sentiment ~ -sentiment, family = binomial(link = 'logit'), data = train)
+logsitic_regression_model <- glm(formula = sentiment ~ ., family = binomial(link = 'logit'), data = train)
 summary(logsitic_regression_model)
 # evaluate the model
 library(caret)
@@ -417,7 +419,7 @@ confusionMatrix(data = lr_pred, test[, 'sentiment'])
 ```{r,cache=TRUE,warning=FALSE}
 library (nnet)
 # train the model
-neural_network_model <- nnet(formula =  sentiment ~. -sentiment, data =train, decay = 0.5, size = 6)
+neural_network_model <- nnet(formula =  sentiment ~ ., data =train, decay = 0.5, size = 6)
 summary(neural_network_model)
 # evaluate the model
 nn_pred <- predict(neural_network_model, newdata = test)

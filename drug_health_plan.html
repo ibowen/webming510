@@ -354,10 +354,63 @@ str(income_data2)</code></pre>
 # indexed by each zip code (e.g. 5 zip codes in one county would all have same info)
 #read physician data set, select subset, remove non-complete rows
 doctors &lt;- read.csv('./data/physician.csv', stringsAsFactors = FALSE)
-myVars &lt;- c(&quot;NPI&quot;, &quot;Graduation.year&quot;,&quot;Primary.specialty&quot;,&quot;City&quot;, &quot;State&quot;, &quot;Zip.Code&quot;)
+str(doctors)</code></pre>
+<pre><code>## 'data.frame':    268933 obs. of  43 variables:
+##  $ NPI                                                         : int  1003001843 1891805826 1679797591 1124225222 1225065907 1972618387 1316121445 1932372281 1942246673 1750329595 ...
+##  $ PAC.ID                                                      : num  5.60e+09 7.42e+09 4.59e+09 4.46e+08 9.54e+09 ...
+##  $ Professional.Enrollment.ID                                  : chr  &quot;I20050301000433&quot; &quot;I20120727000166&quot; &quot;I20050818000907&quot; &quot;I20071207000432&quot; ...
+##  $ Last.Name                                                   : chr  &quot;LUECHINGER&quot; &quot;MATHIS&quot; &quot;MELNICK&quot; &quot;COOKE&quot; ...
+##  $ First.Name                                                  : chr  &quot;INGE&quot; &quot;CYNTHIA&quot; &quot;JOSEPH&quot; &quot;ARYIAN&quot; ...
+##  $ Middle.Name                                                 : chr  &quot;C&quot; &quot;M&quot; &quot;&quot; &quot;L&quot; ...
+##  $ Suffix                                                      : chr  &quot;&quot; &quot;&quot; &quot;&quot; &quot;&quot; ...
+##  $ Gender                                                      : chr  &quot;F&quot; &quot;F&quot; &quot;M&quot; &quot;F&quot; ...
+##  $ Credential                                                  : chr  &quot;CNS&quot; &quot;&quot; &quot;CP&quot; &quot;&quot; ...
+##  $ Medical.school.name                                         : chr  &quot;OTHER&quot; &quot;HAHNEMANN UNIVERSITY COLLEGE OF MEDICINE&quot; &quot;OTHER&quot; &quot;MEDICAL COLLEGE OF WISCONSIN&quot; ...
+##  $ Graduation.year                                             : int  1998 1992 1971 2003 1972 1976 2002 2008 1984 2000 ...
+##  $ Primary.specialty                                           : chr  &quot;CLINICAL NURSE SPECIALIST&quot; &quot;PHYSICAL MEDICINE AND REHABILITATION&quot; &quot;CLINICAL PSYCHOLOGIST&quot; &quot;OBSTETRICS/GYNECOLOGY&quot; ...
+##  $ Secondary.specialty.1                                       : chr  &quot;&quot; &quot;&quot; &quot;&quot; &quot;&quot; ...
+##  $ Secondary.specialty.2                                       : chr  &quot;&quot; &quot;&quot; &quot;&quot; &quot;&quot; ...
+##  $ Secondary.specialty.3                                       : chr  &quot;&quot; &quot;&quot; &quot;&quot; &quot;&quot; ...
+##  $ Secondary.specialty.4                                       : chr  &quot;&quot; &quot;&quot; &quot;&quot; &quot;&quot; ...
+##  $ All.secondary.specialties                                   : chr  &quot;&quot; &quot;&quot; &quot;&quot; &quot;&quot; ...
+##  $ Organization.legal.name                                     : chr  &quot;FAMILY THERAPY PC&quot; &quot;CYNTHIA M. MATHIS, MD, PC&quot; &quot;PORTLAND CENTER FOR COUNSELING AND PSYCHOTHERAPY&quot; &quot;WALDORF WOMENS CARE&quot; ...
+##  $ Organization.DBA.name                                       : logi  NA NA NA NA NA NA ...
+##  $ Group.Practice.PAC.ID                                       : num  2.26e+09 4.46e+08 2.96e+09 3.68e+09 2.86e+09 ...
+##  $ Number.of.Group.Practice.members                            : int  1 1 1 2 1 1 1 3 1 1 ...
+##  $ Line.1.Street.Address                                       : chr  &quot;1296 PARKER SERD&quot; &quot;6221 WILSHIRE BLVD&quot; &quot;178 MIDDLE ST&quot; &quot;11355 PEMBROOKE SQUARE&quot; ...
+##  $ Line.2.Street.Address                                       : chr  &quot;&quot; &quot;&quot; &quot;&quot; &quot;&quot; ...
+##  $ Marker.of.address.line.2.suppression                        : chr  &quot;N&quot; &quot;Y&quot; &quot;Y&quot; &quot;N&quot; ...
+##  $ City                                                        : chr  &quot;CONYERS&quot; &quot;LOS ANGELES&quot; &quot;PORTLAND&quot; &quot;WALDORF&quot; ...
+##  $ State                                                       : chr  &quot;GA&quot; &quot;CA&quot; &quot;ME&quot; &quot;MD&quot; ...
+##  $ Zip.Code                                                    : chr  &quot;300945951&quot; &quot;900485215&quot; &quot;041014075&quot; &quot;206034805&quot; ...
+##  $ Claims.based.hospital.affiliation.CCN.1                     : int  NA 50625 NA 210035 NA NA NA NA NA NA ...
+##  $ Claims.based.hospital.affiliation.LBN.1                     : chr  &quot;&quot; &quot;CEDARS-SINAI MEDICAL CENTER&quot; &quot;&quot; &quot;CIVISTA MEDICAL CENTER INC.&quot; ...
+##  $ Claims.based.hospital.affiliation.CCN.2                     : chr  &quot;&quot; &quot;&quot; &quot;&quot; &quot;&quot; ...
+##  $ Claims.based.hospital.affiliation.LBN.2                     : chr  &quot;&quot; &quot;&quot; &quot;&quot; &quot;&quot; ...
+##  $ Claims.based.hospital.affiliation.CCN.3                     : int  NA NA NA NA NA NA NA NA NA NA ...
+##  $ Claims.based.hospital.affiliation.LBN.3                     : chr  &quot;&quot; &quot;&quot; &quot;&quot; &quot;&quot; ...
+##  $ Claims.based.hospital.affiliation.CCN.4                     : int  NA NA NA NA NA NA NA NA NA NA ...
+##  $ Claims.based.hospital.affiliation.LBN.4                     : chr  &quot;&quot; &quot;&quot; &quot;&quot; &quot;&quot; ...
+##  $ Claims.based.hospital.affiliation.CCN.5                     : int  NA NA NA NA NA NA NA NA NA NA ...
+##  $ Claims.based.hospital.affiliation.LBN.5                     : chr  &quot;&quot; &quot;&quot; &quot;&quot; &quot;&quot; ...
+##  $ Professional.accepts.Medicare.Assignment                    : chr  &quot;M&quot; &quot;Y&quot; &quot;Y&quot; &quot;Y&quot; ...
+##  $ Participating.in.eRx                                        : logi  NA NA NA NA NA NA ...
+##  $ Participating.in.PQRS                                       : chr  &quot;&quot; &quot;&quot; &quot;&quot; &quot;&quot; ...
+##  $ Participating.in.EHR                                        : chr  &quot;&quot; &quot;&quot; &quot;&quot; &quot;&quot; ...
+##  $ Received.PQRS.Maintenance.of.Certification.Program.Incentive: chr  &quot;&quot; &quot;&quot; &quot;&quot; &quot;&quot; ...
+##  $ Participated.in.Million.Hearts                              : chr  &quot;&quot; &quot;&quot; &quot;&quot; &quot;&quot; ...</code></pre>
+<pre class="r"><code>myVars &lt;- c(&quot;NPI&quot;, &quot;Graduation.year&quot;,&quot;Primary.specialty&quot;,&quot;City&quot;, &quot;State&quot;, &quot;Zip.Code&quot;)
 doctors &lt;- doctors[myVars]
 doctors &lt;- doctors[complete.cases(doctors),]
-head(doctors)</code></pre>
+str(doctors)</code></pre>
+<pre><code>## 'data.frame':    266552 obs. of  6 variables:
+##  $ NPI              : int  1003001843 1891805826 1679797591 1124225222 1225065907 1972618387 1316121445 1932372281 1942246673 1750329595 ...
+##  $ Graduation.year  : int  1998 1992 1971 2003 1972 1976 2002 2008 1984 2000 ...
+##  $ Primary.specialty: chr  &quot;CLINICAL NURSE SPECIALIST&quot; &quot;PHYSICAL MEDICINE AND REHABILITATION&quot; &quot;CLINICAL PSYCHOLOGIST&quot; &quot;OBSTETRICS/GYNECOLOGY&quot; ...
+##  $ City             : chr  &quot;CONYERS&quot; &quot;LOS ANGELES&quot; &quot;PORTLAND&quot; &quot;WALDORF&quot; ...
+##  $ State            : chr  &quot;GA&quot; &quot;CA&quot; &quot;ME&quot; &quot;MD&quot; ...
+##  $ Zip.Code         : chr  &quot;300945951&quot; &quot;900485215&quot; &quot;041014075&quot; &quot;206034805&quot; ...</code></pre>
+<pre class="r"><code>head(doctors)</code></pre>
 <pre><code>##          NPI Graduation.year                    Primary.specialty
 ## 1 1003001843            1998            CLINICAL NURSE SPECIALIST
 ## 2 1891805826            1992 PHYSICAL MEDICINE AND REHABILITATION
@@ -722,30 +775,40 @@ test &lt;- final_data3_rm4[-training_index,]</code></pre>
 <div id="logistic-regression" class="section level1">
 <h1>Logistic Regression</h1>
 <pre class="r"><code># train the model
-logsitic_regression_model &lt;- glm(formula = sentiment ~ -sentiment, family = binomial(link = 'logit'), data = train)
+logsitic_regression_model &lt;- glm(formula = sentiment ~ ., family = binomial(link = 'logit'), data = train)
 summary(logsitic_regression_model)</code></pre>
 <pre><code>## 
 ## Call:
-## glm(formula = sentiment ~ -sentiment, family = binomial(link = &quot;logit&quot;), 
+## glm(formula = sentiment ~ ., family = binomial(link = &quot;logit&quot;), 
 ##     data = train)
 ## 
 ## Deviance Residuals: 
 ##     Min       1Q   Median       3Q      Max  
-## -0.9561  -0.9561  -0.9561   1.4161   1.4161  
+## -2.1455  -0.8498  -0.3612   0.9150   4.3925  
 ## 
 ## Coefficients:
-##              Estimate Std. Error z value Pr(&gt;|z|)    
-## (Intercept) -0.545627   0.008442  -64.63   &lt;2e-16 ***
+##                     Estimate Std. Error z value Pr(&gt;|z|)    
+## (Intercept)       -3.016e+00  1.168e-01 -25.812   &lt;2e-16 ***
+## experience         2.207e-03  2.547e-03   0.867   0.3862    
+## spec_count        -1.803e-02  5.695e-04 -31.665   &lt;2e-16 ***
+## unemployment_rate -3.620e-02  2.568e-03 -14.096   &lt;2e-16 ***
+## average_income    -1.650e-04  8.055e-05  -2.049   0.0405 *  
+## average_physician -4.264e-04  3.048e-05 -13.988   &lt;2e-16 ***
+## tier_label         7.302e-01  2.043e-02  35.734   &lt;2e-16 ***
+## mnthly_prm         2.989e-02  8.587e-04  34.808   &lt;2e-16 ***
+## ann_ddctbl        -1.118e-02  1.334e-04 -83.809   &lt;2e-16 ***
+## copay_max         -1.866e-02  3.794e-04 -49.179   &lt;2e-16 ***
+## coin_max           1.792e-02  7.776e-04  23.051   &lt;2e-16 ***
 ## ---
 ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 ## 
 ## (Dispersion parameter for binomial family taken to be 1)
 ## 
 ##     Null deviance: 79404  on 60403  degrees of freedom
-## Residual deviance: 79404  on 60403  degrees of freedom
-## AIC: 79406
+## Residual deviance: 61649  on 60393  degrees of freedom
+## AIC: 61671
 ## 
-## Number of Fisher Scoring iterations: 4</code></pre>
+## Number of Fisher Scoring iterations: 5</code></pre>
 <pre class="r"><code># evaluate the model
 library(caret)
 lr_pred &lt;- predict(logsitic_regression_model, newdata = test, type = &quot;response&quot;)
@@ -758,25 +821,25 @@ confusionMatrix(data = lr_pred, test[, 'sentiment'])</code></pre>
 ## 
 ##           Reference
 ## Prediction    0    1
-##          0 9472 5630
-##          1    0    0
+##          0 7932 2117
+##          1 1540 3513
 ##                                           
-##                Accuracy : 0.6272          
-##                  95% CI : (0.6194, 0.6349)
+##                Accuracy : 0.7578          
+##                  95% CI : (0.7509, 0.7647)
 ##     No Information Rate : 0.6272          
-##     P-Value [Acc &gt; NIR] : 0.5036          
+##     P-Value [Acc &gt; NIR] : &lt; 2.2e-16       
 ##                                           
-##                   Kappa : 0               
-##  Mcnemar's Test P-Value : &lt;2e-16          
+##                   Kappa : 0.4712          
+##  Mcnemar's Test P-Value : &lt; 2.2e-16       
 ##                                           
-##             Sensitivity : 1.0000          
-##             Specificity : 0.0000          
-##          Pos Pred Value : 0.6272          
-##          Neg Pred Value :    NaN          
+##             Sensitivity : 0.8374          
+##             Specificity : 0.6240          
+##          Pos Pred Value : 0.7893          
+##          Neg Pred Value : 0.6952          
 ##              Prevalence : 0.6272          
-##          Detection Rate : 0.6272          
-##    Detection Prevalence : 1.0000          
-##       Balanced Accuracy : 0.5000          
+##          Detection Rate : 0.5252          
+##    Detection Prevalence : 0.6654          
+##       Balanced Accuracy : 0.7307          
 ##                                           
 ##        'Positive' Class : 0               
 ## </code></pre>
@@ -785,50 +848,50 @@ confusionMatrix(data = lr_pred, test[, 'sentiment'])</code></pre>
 <h1>Neural Network</h1>
 <pre class="r"><code>library (nnet)
 # train the model
-neural_network_model &lt;- nnet(formula =  sentiment ~. -sentiment, data =train, decay = 0.5, size = 6)</code></pre>
+neural_network_model &lt;- nnet(formula =  sentiment ~ ., data =train, decay = 0.5, size = 6)</code></pre>
 <pre><code>## # weights:  73
-## initial  value 45372.011737 
-## iter  10 value 32977.139211
-## iter  20 value 31049.289288
-## iter  30 value 30021.212542
-## iter  40 value 29541.309871
-## iter  50 value 29096.410556
-## iter  60 value 28568.763350
-## iter  70 value 28328.825946
-## iter  80 value 27476.281204
-## iter  90 value 26820.629174
-## iter 100 value 26518.873005
-## final  value 26518.873005 
+## initial  value 45251.518375 
+## iter  10 value 33718.165097
+## iter  20 value 32070.824871
+## iter  30 value 30938.972123
+## iter  40 value 30645.863849
+## iter  50 value 30387.382801
+## iter  60 value 30161.943963
+## iter  70 value 29415.783573
+## iter  80 value 28863.845310
+## iter  90 value 28172.047564
+## iter 100 value 27849.638996
+## final  value 27849.638996 
 ## stopped after 100 iterations</code></pre>
 <pre class="r"><code>summary(neural_network_model)</code></pre>
 <pre><code>## a 10-6-1 network with 73 weights
 ## options were - entropy fitting  decay=0.5
 ##   b-&gt;h1  i1-&gt;h1  i2-&gt;h1  i3-&gt;h1  i4-&gt;h1  i5-&gt;h1  i6-&gt;h1  i7-&gt;h1  i8-&gt;h1 
-##    3.52    1.08   -0.10   -0.01    0.01    0.00  -11.01   -0.73    0.49 
+##   -0.18   -4.92   -7.52   -2.33   -2.71    1.32    0.87    3.58   -0.34 
 ##  i9-&gt;h1 i10-&gt;h1 
-##    1.30   -0.42 
+##    5.03    2.96 
 ##   b-&gt;h2  i1-&gt;h2  i2-&gt;h2  i3-&gt;h2  i4-&gt;h2  i5-&gt;h2  i6-&gt;h2  i7-&gt;h2  i8-&gt;h2 
-##    2.55    6.04   -0.66    1.57    0.28    0.02    5.37    5.26   -1.07 
+##    0.16    0.71    1.33    0.21    1.01    1.16    0.24    0.61    2.47 
 ##  i9-&gt;h2 i10-&gt;h2 
-##   -0.49   -4.03 
+##    0.59    0.51 
 ##   b-&gt;h3  i1-&gt;h3  i2-&gt;h3  i3-&gt;h3  i4-&gt;h3  i5-&gt;h3  i6-&gt;h3  i7-&gt;h3  i8-&gt;h3 
-##    1.48   -0.16    0.04    0.21    0.00    0.00   -0.91    0.34    0.45 
+##   -2.69    0.19   -0.01   -0.71   -0.05    0.00  -20.19   -0.20    1.22 
 ##  i9-&gt;h3 i10-&gt;h3 
-##   -2.40    6.30 
+##   -0.25    0.86 
 ##   b-&gt;h4  i1-&gt;h4  i2-&gt;h4  i3-&gt;h4  i4-&gt;h4  i5-&gt;h4  i6-&gt;h4  i7-&gt;h4  i8-&gt;h4 
-##    1.76    0.95    0.81   -0.03    0.03    0.12    4.77   -2.05    0.91 
+##   -1.76   -4.99    0.97   -0.64    0.01   -0.14   -3.56   -4.11   -0.05 
 ##  i9-&gt;h4 i10-&gt;h4 
-##   -0.70   -0.90 
+##    5.61   -1.69 
 ##   b-&gt;h5  i1-&gt;h5  i2-&gt;h5  i3-&gt;h5  i4-&gt;h5  i5-&gt;h5  i6-&gt;h5  i7-&gt;h5  i8-&gt;h5 
-##    1.29    0.49    1.33    3.15    0.29    0.16    2.37   -4.73    0.97 
+##   -1.26   -3.68    0.53   -0.48   -0.43   -1.78   -5.99    2.95   -3.74 
 ##  i9-&gt;h5 i10-&gt;h5 
-##    0.04   -2.86 
+##   -0.38   -0.14 
 ##   b-&gt;h6  i1-&gt;h6  i2-&gt;h6  i3-&gt;h6  i4-&gt;h6  i5-&gt;h6  i6-&gt;h6  i7-&gt;h6  i8-&gt;h6 
-##    0.56   -1.51   -1.09    0.31    0.15   -0.01   -0.55    1.01    0.94 
+##   -0.20   -5.00   -1.90   -0.82   -0.03   -0.25   15.78    1.87    0.85 
 ##  i9-&gt;h6 i10-&gt;h6 
-##   -0.68    2.24 
+##    0.15    3.06 
 ##   b-&gt;o  h1-&gt;o  h2-&gt;o  h3-&gt;o  h4-&gt;o  h5-&gt;o  h6-&gt;o 
-##   1.97  -2.02   1.45  -2.24  -1.27  -0.64   1.41</code></pre>
+##  -0.82   0.30   0.99  -3.71  -2.31   3.09   1.84</code></pre>
 <pre class="r"><code># evaluate the model
 nn_pred &lt;- predict(neural_network_model, newdata = test)
 nn_pred &lt;- ifelse(nn_pred &gt;= 0.5, 1, 0)
@@ -838,25 +901,25 @@ confusionMatrix(data = nn_pred, test[, 'sentiment'])</code></pre>
 ## 
 ##           Reference
 ## Prediction    0    1
-##          0 8112 1706
-##          1 1360 3924
+##          0 7676 1919
+##          1 1796 3711
 ##                                           
-##                Accuracy : 0.797           
-##                  95% CI : (0.7905, 0.8034)
+##                Accuracy : 0.754           
+##                  95% CI : (0.7471, 0.7609)
 ##     No Information Rate : 0.6272          
-##     P-Value [Acc &gt; NIR] : &lt; 2.2e-16       
+##     P-Value [Acc &gt; NIR] : &lt; 2e-16         
 ##                                           
-##                   Kappa : 0.5604          
-##  Mcnemar's Test P-Value : 4.645e-10       
+##                   Kappa : 0.4716          
+##  Mcnemar's Test P-Value : 0.04533         
 ##                                           
-##             Sensitivity : 0.8564          
-##             Specificity : 0.6970          
-##          Pos Pred Value : 0.8262          
-##          Neg Pred Value : 0.7426          
+##             Sensitivity : 0.8104          
+##             Specificity : 0.6591          
+##          Pos Pred Value : 0.8000          
+##          Neg Pred Value : 0.6739          
 ##              Prevalence : 0.6272          
-##          Detection Rate : 0.5371          
-##    Detection Prevalence : 0.6501          
-##       Balanced Accuracy : 0.7767          
+##          Detection Rate : 0.5083          
+##    Detection Prevalence : 0.6353          
+##       Balanced Accuracy : 0.7348          
 ##                                           
 ##        'Positive' Class : 0               
 ## </code></pre>

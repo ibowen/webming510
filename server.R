@@ -28,7 +28,7 @@ if(!exists(filepath)) {
     # subset the state list
     state_list <- as.list(rownames(table(data$state)))
     # subset the contract list
-    contract_list <- as.list(rownames(table(data$contract_id)))
+    # contract_list <- as.list(rownames(table(data$contract_id)))
     
     # colnames to show
     colnames_show <- c('Rating', 'State', 'County', 'Zip', 'Experience(years)', 'Physician Speciaties', 'Unemployment(%)', 'Avg Income(,000$)', 
@@ -174,9 +174,9 @@ shinyServer(function(input, output, session) {
   })
   
   # fill contract id
-  observe({
-      updateSelectInput(session, "contract_id", choices = contract_list, selected = contract_list[1])
-  })
+  # observe({
+  #     updateSelectInput(session, "contract_id", choices = contract_list, selected = contract_list[1])
+  # })
   
 })
 

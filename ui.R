@@ -15,6 +15,37 @@ vars <- c(
 
 
 shinyUI(navbarPage("Durg and Health Plan Test Panel", id="nav",
+                   tabPanel("Prediction Panel", 
+                            fluidPage(
+                                # Application title
+                                #titlePanel("Preidictors"),
+                                # Siderbar Input
+                                sidebarLayout(
+                                    sidebarPanel(
+                                        # Select State and Contract
+                                        selectInput(inputId = 'state', label   = 'Choose State:', choices = "AL"),
+                                        #selectInput(inputId = 'contract_id', label   = 'Choose Contract:', choices = ""),
+                                        
+                                        h3('Internal Predictors'),
+                                        sliderInput('tier', 'Tier Number', min = 2, max = 10, step = 1, value = 5),
+                                        sliderInput('premium', 'Monthy Premium($)', min = 0, max = 100, step = 1, value = 20),
+                                        sliderInput('deductible', 'Annualy Deductible($)', min = 0, max = 500, step = 10, value = 100),
+                                        sliderInput('copayment', 'Maximium Copayment Rate(%)', min = 0, max = 100, step = 1, value = 20),
+                                        sliderInput('coinsurance', 'Maximium Coinsurance Rate(%)', min = 0, max = 50, step = 1, value = 25),
+                                        submitButton("submit")
+                                    ),
+                                    
+                                    mainPanel(
+                                        h1('Drug and Health Plan Design Panel'),
+                                        helpText("This application is for predicting the customer ratings for the drug and Health Plan"),
+                                        br(),
+                                        
+                                        DT::dataTableOutput('pred_list')
+                                        
+                                    )
+                                )
+                            )
+                   ),
     tabPanel("Interactive Map",
         div(class="outer",
             tags$head(
@@ -38,36 +69,5 @@ shinyUI(navbarPage("Durg and Health Plan Test Panel", id="nav",
             tags$div(id="cite",
                      'Data compiled for ', tags$em('Coming Apart: The Medicare Data, 2014'), ' By 510_Team_2'
             )
-    ),
-                tabPanel("Prediction Panel", 
-                    fluidPage(
-                        # Application title
-                        #titlePanel("Preidictors"),
-                        # Siderbar Input
-                        sidebarLayout(
-                            sidebarPanel(
-                                # Select State and Contract
-                                selectInput(inputId = 'state', label   = 'Choose State:', choices = "AL"),
-                                selectInput(inputId = 'contract_id', label   = 'Choose Contract:', choices = ""),
-                                
-                                h3('Internal Predictors'),
-                                sliderInput('tier', 'Tier Number', min = 2, max = 10, step = 1, value = 5),
-                                sliderInput('premium', 'Monthy Premium($)', min = 0, max = 100, step = 1, value = 20),
-                                sliderInput('deductible', 'Annualy Deductible($)', min = 0, max = 500, step = 10, value = 100),
-                                sliderInput('copayment', 'Maximium Copayment Rate(%)', min = 0, max = 100, step = 1, value = 20),
-                                sliderInput('coinsurance', 'Maximium Coinsurance Rate(%)', min = 0, max = 50, step = 1, value = 25),
-                                submitButton("submit")
-                            ),
-                            
-                            mainPanel(
-                                h1('Drug and Health Plan Design Panel'),
-                                helpText("This application is for predicting the customer ratings for the drug and Health Plan"),
-                                br(),
-                                
-                                DT::dataTableOutput('pred_list')
-                            
-                            )
-                        )
-                    )
-                )
+    )
 ))
