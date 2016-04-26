@@ -14,7 +14,7 @@ vars <- c(
 )
 
 
-shinyUI(navbarPage("Durg and Health Plan Test Panel", id="nav",
+shinyUI(navbarPage("Durg and Health Plan Test", id="nav",
                    tabPanel("Prediction Panel", 
                             fluidPage(
                                 # Application title
@@ -38,8 +38,8 @@ shinyUI(navbarPage("Durg and Health Plan Test Panel", id="nav",
                                     mainPanel(
                                         h1('Drug and Health Plan Design Panel'),
                                         helpText("This application is for predicting the customer ratings for the drug and Health Plan"),
-                                        br(),
-                                        
+                                        h4('Rating Summary: '),
+                                        tableOutput('summary_list'),
                                         DT::dataTableOutput('pred_list')
                                         
                                     )

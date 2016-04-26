@@ -33,6 +33,9 @@ if(!exists(filepath)) {
     # colnames to show
     colnames_show <- c('Rating', 'State', 'County', 'Zip', 'Experience(years)', 'Physician Speciaties', 'Unemployment(%)', 'Avg Income(,000$)', 
                        'Citizens/Physician', 'Tiers', 'Monthy Premium($)', 'Annualy Deductible($)', 'Max Copayment(%)', 'Max Coinsurance(%)')
+    
+    # colnames to summary data
+    colnames_summary <- c('Total Number of Ratings', 'Number of Good Ratings', 'Number of Bad Ratings')
 }
 
 # Leaflet bindings are a bit slow; for now we'll just sample to compensate
@@ -163,15 +166,26 @@ shinyServer(function(input, output, session) {
         rownames(data_show) <- NULL
         data_show
     })
-    
+    # summary list
+    output$summary_list <- renderTable(data_summary())
+    # pred list
     output$pred_list <- DT::renderDataTable({
         DT::datatable(data_show(), colnames = colnames_show)
-  })
-
-  # fill states
-  observe({
+    })
+    
+    # fill states
+    observe({
       updateSelectInput(session, "state", choices = state_list, selected = state_list[1])
-  })
+    })
+    
+    # sum rating results
+    data_summary <- reactive({
+        summary <- data_rating()
+        summary_data <- data.frame(length(summary), length(summary[summary == 'Good']), length(summary[summary == 'Bad']))
+        colnames(summary_data) <- colnames_summary
+        rownames(summary_data) <- input$state
+        summary_data
+    })
   
   # fill contract id
   # observe({
